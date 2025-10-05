@@ -3,10 +3,11 @@ import random
 import math
 
 pygame.init()
+pygame.mixer.init()
 
 scrwid, scrhei = 800, 600
 
-pygame.display.set_caption("Add More Sprites Game")
+pygame.display.set_caption("Level Upped!")
 icon = pygame.image.load("enemy.png")
 pygame.display.set_icon(icon)
 
@@ -16,7 +17,7 @@ background = pygame.image.load("background.png")
 enemiesimg = []
 enemiesx = []
 enemiesy = []
-enenmycount = 8
+enenmycount = 7
 
 enemyimg = pygame.image.load("enemy.png")
 enemyimg = pygame.transform.scale(enemyimg, (70, 70))
@@ -40,17 +41,16 @@ texty = 10
 overfont = pygame.font.SysFont("timesnewroman", 64)
 
 playerimg = pygame.transform.scale(playerimg, (60, 70))
+background = pygame.transform.scale(background, (800, 600))
 
 enenmiesalive = enenmycount
 
 playerspeed = 1
 
-def showscore(x, y):
-    score = font.render("score: "+ str(scorevalue), True, (255,255,255))
-    screen.blit(score, x, y)
+bgmusic = "backgroundmusic.mp3"
 
 def gameovertext():
-    overtext = overfont.render("YOU WIN!", True, (0, 0, 0))
+    overtext = overfont.render("YOU WIN!", True, (155, 0, 0))
     screen.blit(overtext, (200, 250))
 
 def player(x, y):
@@ -65,6 +65,12 @@ def iscollosion(enemyx, enemyy, playerx, playery):
 
 playing = True
 
+pygame.mixer.music.load(bgmusic)
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(loops=-1)
+
+enemydiesound = pygame.mixer.Sound("die.mp3")
+
 while playing:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -76,6 +82,8 @@ while playing:
         if keys[pygame.K_RIGHT]: playerx += playerspeed
         if keys[pygame.K_UP]: playery -= playerspeed
         if keys[pygame.K_DOWN]: playery += playerspeed
+    else:
+        pygame.mixer.music.stop()
 
     screen.blit(background, (0, 0))
     player(playerx, playery)
@@ -87,11 +95,12 @@ while playing:
             enemiesx[i] = 100000
             enemiesy[i] = 100000
             enenmiesalive -= 1
+            enemydiesound.play()
 
     if enenmiesalive == 0:
         gameovertext()
 
-    top = font.render(str(7 - enenmiesalive), True, (0, 0, 0))
+    top = font.render(str(enenmycount - enenmiesalive), True, (255, 255, 255))
     screen.blit(top, (400, 40))
 
 
